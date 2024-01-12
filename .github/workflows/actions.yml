@@ -1,0 +1,23 @@
+name: Deploy Infrastructure
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  tf_deploy:
+    name: Deploy Site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Hello World
+        run: echo "Hello World"
+        
+      
+    
