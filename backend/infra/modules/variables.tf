@@ -6,5 +6,8 @@ variable "handler" {}
 variable "layers" {
     default = null
 }
-variable "environment_var" {}
+variable "environment_vars" {
+  type    = map(string)
+  default = null
+}
 #Variables end----------------------------------------------------------#

@@ -6,7 +6,7 @@ terraform {
       version = "4.30.0"
     }
   }
-  
+
   required_version = ">=1.6.0"
 
   backend "s3" {
@@ -25,5 +25,13 @@ terraform {
 provider "aws" {
   region  = var.default_region
   profile = "spike"
+}
+
+output "amplify_app_id" {
+  value = aws_amplify_app.d_smart_app.id
+}
+
+output "amplify_app_url" {
+  value = aws_amplify_domain_association.domain_association.domain_name
 }
 #Providers end----------------------------------------------------------#

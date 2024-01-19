@@ -5,19 +5,68 @@ on:
     branches:
       - main
 
+env:
+  TF_LOG: INFO
+  TF_INPUT: false
+
 jobs:
   tf_deploy:
     name: Deploy Site
     runs-on: ubuntu-latest
+
+    defaults:
+        run:
+          shell: bash
+          working-directory: ../src/backend/infra
+
+    env:
+        TF_VAR_token: ${{ secrets.GITHUB_TOKEN }}
+        AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.REGION }}
+    
     steps:
-      - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
-        
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout the repo  
+        uses: actions/checkout@v4
       
+      - name: Set up Terraform CLI
+        uses: hashicorp/setup-terraform@v3
+
       - name: Hello World
         run: echo "Hello World"
         
+        #test your terraform commands
+      - name: Terraform fmt
+        id: fmt
+        # Run even if formatting fails
+        if: success() || failure()
+        run: terraform fmt -check
+        # continue-on-error: true
+
+      - name: Terraform Init
+        id: validate
+        run: terraform validate -no-color
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_DEFAULT_REGION: ${{ secrets.REGION }}
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -auto-approve
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_DEFAULT_REGION: ${{ secrets.REGION }}
+    #   - name: Terraform Apply
+        # id: apply
+        # run: terraform apply -auto-approve
+
+    #   - name: Initialize Terraform
+    #     run: terraform init
       
-    
+    #   - name: Run Terraform plan
+    #     run: terraform plan -auto-approve
+      
+    #   - name: Run Terraform apply
+    #     run: terraform apply -auto-approve

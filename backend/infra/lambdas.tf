@@ -2,38 +2,41 @@
 module "function_1" {
   source        = "./modules"
   function_name = "function_1"
-  code_source = "../function_1"
-  handler = "function_1.lambda_handler"
-  assume_role = aws_iam_role.lambda_exec_role_1.arn
-  enviroment_var = "function_1_test_variable"
+  code_source   = "../function_1"
+  handler       = "function_1.lambda_handler"
+  assume_role   = aws_iam_role.lambda_exec_role_1.arn
+  environment_vars = {
+    test_variable = "function_1_test_variable"
+    email_table   = aws_dynamodb_table.email_table.id
+  }
 }
-
 module "function_2" {
   source        = "./modules"
   function_name = "function_2"
-  code_source = "../function_2"
-  handler = "function_2.lambda_handler"
-  assume_role = aws_iam_role.lambda_exec_role_2.arn
-  enviroment_var = "function_2_test_variable"
+  code_source   = "../function_2"
+  handler       = "function_2.lambda_handler"
+  assume_role   = aws_iam_role.lambda_exec_role_2.arn
+  # environment_vars = "function_2_test_variable"
 }
 
 module "function_3" {
   source        = "./modules"
   function_name = "function_3"
-  code_source = "../function_3"
-  handler = "function_3.lambda_handler"
-  assume_role = aws_iam_role.lambda_exec_role_3.arn
-  enviroment_var = "function_3_test_variable"
-  
-#   email_table = os.environ['email_table']
-#   function_name = os.environ['function_name']
-#   sqs_queue = os.environ['sqs_queue']
-#   resume_bucket = os.environ['resume_bucket']
-#   report = os.environ['report_name']
-#   role_dlm = os.environ['role_dlm']
-#   role_target = os.environ['role_target']
-#   topic = os.environ['topic_arn']
-#   test_variable = os.environ['test_variable']
+  code_source   = "../function_3"
+  handler       = "function_3.lambda_handler"
+  assume_role   = aws_iam_role.lambda_exec_role_3.arn
+  environment_vars = {
+    test_variable = "function_3_test_variable"
+    email_table   = aws_dynamodb_table.email_table.id
+  }
+  #   function_name = os.environ['function_name']
+  #   sqs_queue = os.environ['sqs_queue']
+  #   resume_bucket = os.environ['resume_bucket']
+  #   report = os.environ['report_name']
+  #   role_dlm = os.environ['role_dlm']
+  #   role_target = os.environ['role_target']
+  #   topic = os.environ['topic_arn']
+  #   test_variable = os.environ['test_variable']
 }
 #Modules end----------------------------------------------------------#
 

@@ -1,19 +1,30 @@
+#Variables start----------------------------------------------------------#
+variable "default_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+# variable "email_table" {
+# type = string
+# default = aws_dynamodb_table.email_table.name
+# }
+
 variable "token" {
   type = string
   description = "github token to connect github repo"
-  default = ""
+    default = ""
 }
 
 variable "repository" {
   type = string
   description = "github repo url"
-  default = "https://github.com/d-hart/d-smart-alpha-site"
+  default = "https://github.com/d-hart/d-smart-alpha-site.git"
 }
 
 variable "app_name" {
   type = string
   description = "AWS Amplify App Name"
-  default = "D_smart_App"
+  default = "D_Smart_App"
 }
 
 variable "branch_name" {
@@ -27,3 +38,4 @@ variable "domain_name" {
   description = "AWS Amplify Domain Name"
   default = "d-smart.io"
 }
+#Variables end----------------------------------------------------------#

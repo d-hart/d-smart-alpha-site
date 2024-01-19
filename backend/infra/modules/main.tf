@@ -5,6 +5,11 @@ data "archive_file" "name" {
     output_path = "${var.function_name}.zip"
 }
 #Data end----------------------------------------------------------#
+#Locals start----------------------------------------------------------#
+locals {
+  environment_map = var.environment_vars[*]
+}
+#Locals end----------------------------------------------------------#
 #Resources start----------------------------------------------------------#
 resource "aws_lambda_function" "lambda_function" {
     function_name = var.function_name
@@ -17,11 +22,12 @@ resource "aws_lambda_function" "lambda_function" {
     role = var.assume_role
     layers = var.layers
 
-    environment {
-        variables = {
-            test_variable = "${var.environment_var}"
+    dynamic "environment" {
+        for_each = local.environment_map
+        content {
+          variables = environment.value
         }
-    }
+      }
 
     tags = {
         project = "d-smart-alpha-site"
@@ -30,9 +36,3 @@ resource "aws_lambda_function" "lambda_function" {
     }
 }
 #Resources end----------------------------------------------------------#
-https://aws.amazon.com/getting-started/hands-on/get-a-domain/?ref=gsrchandson&id=updated
-https://aws.amazon.com/getting-started/hands-on/get-a-domain/?ref=gsrchandson&id=updated
-https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/amplify_app
-https://docs.aws.amazon.com/amplify/latest/userguide/build-settings.html
-https://us-east-1.console.aws.amazon.com/route53/v2/hostedzones?region=us-east-1#ListRecordSets/Z058902510ZIZB07I7RKC
-https://ap.www.namecheap.com/domains/domaincontrolpanel/d-smart.io/domain
