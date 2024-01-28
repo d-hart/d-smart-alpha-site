@@ -12,7 +12,7 @@ variable "default_region" {
 variable "token" {
   type = string
   description = "github token to connect github repo"
-    default = ""
+  default = ""
 }
 
 variable "repository" {
