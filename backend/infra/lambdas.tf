@@ -1,8 +1,8 @@
 #Modules start----------------------------------------------------------#
 module "function_1" {
   source        = "./modules"
-  function_name = "function_1"
-  code_source   = "../function_1"
+  function_name = var.function_1
+  code_source   = "../${var.function_1}"
   handler       = "function_1.lambda_handler"
   assume_role   = aws_iam_role.lambda_exec_role_1.arn
   environment_vars = {
@@ -12,8 +12,8 @@ module "function_1" {
 }
 module "function_2" {
   source        = "./modules"
-  function_name = "function_2"
-  code_source   = "../function_2"
+  function_name = var.function_2
+  code_source   = "../${var.function_2}"
   handler       = "function_2.lambda_handler"
   assume_role   = aws_iam_role.lambda_exec_role_2.arn
   # environment_vars = "function_2_test_variable"
@@ -21,8 +21,8 @@ module "function_2" {
 
 module "function_3" {
   source        = "./modules"
-  function_name = "function_3"
-  code_source   = "../function_3"
+  function_name = var.function_3
+  code_source   = "../${var.function_3}"
   handler       = "function_3.lambda_handler"
   assume_role   = aws_iam_role.lambda_exec_role_3.arn
   environment_vars = {
