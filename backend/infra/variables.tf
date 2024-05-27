@@ -33,7 +33,7 @@ variable "token" {
 variable "repository" {
   type        = string
   description = "github repo url"
-  default     = "https://github.com/d-hart/d-smart-alpha-site.git"
+  default     = "https://github.com/d-hart/d-smart-alpha-site"
 }
 
 variable "app_name" {
@@ -52,5 +52,42 @@ variable "domain_name" {
   type        = string
   description = "AWS Amplify Domain Name"
   default     = "d-smart.io"
+}
+# https://d-smart.io
+variable "stage_name" {
+  type        = string
+  description = "The name of the stage"
+  default     = "mach-2"
+}
+
+variable "path_part" {
+  type        = string
+  description = "The name of the path_part"
+  default     = "resume_request"
+}
+
+variable "d_smart_queue" {
+  type        = string
+  description = "The name of the sqs queue"
+  default     = "d_smart_queue"
+}
+
+variable "email_table" {
+  type        = string
+  description = "The name of the dynamodb table"
+  default     = "d_smart_email_table"
+}
+
+# var.email_sender
+variable "email_sender" {
+  type        = string
+  description = "The name of the email address"
+  default     = "noreply@d-smart.io"
+}
+
+variable "d_smart_s3_bucket"{
+  type        = string
+  description = "The name of the s3 bucket"
+  default     = "d_smart_s3_bucket"
 }
 #Variables end----------------------------------------------------------#

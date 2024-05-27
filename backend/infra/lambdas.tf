@@ -6,8 +6,9 @@ module "function_1" {
   handler       = "function_1.lambda_handler"
   assume_role   = aws_iam_role.lambda_exec_role_1.arn
   environment_vars = {
-    test_variable = "function_1_test_variable"
-    email_table   = aws_dynamodb_table.email_table.id
+    function_name = "${var.function_1}"
+    email_table   = "${var.email_table}" # aws_dynamodb_table.email_table.id
+    sqs_queue = "${var.d_smart_queue}"
   }
 }
 module "function_2" {
@@ -16,7 +17,11 @@ module "function_2" {
   code_source   = "../${var.function_2}"
   handler       = "function_2.lambda_handler"
   assume_role   = aws_iam_role.lambda_exec_role_2.arn
-  # environment_vars = "function_2_test_variable"
+  environment_vars = {
+    function_name = "${var.function_1}"
+    email_table   = "${var.email_table}" # aws_dynamodb_table.email_table.id
+    sqs_queue = "${var.d_smart_queue}"
+  }
 }
 
 module "function_3" {
@@ -27,7 +32,7 @@ module "function_3" {
   assume_role   = aws_iam_role.lambda_exec_role_3.arn
   environment_vars = {
     test_variable = "function_3_test_variable"
-    email_table   = aws_dynamodb_table.email_table.id
+    s3_bucket   = "${var.d_smart_s3_bucket}"
   }
   #   function_name = os.environ['function_name']
   #   sqs_queue = os.environ['sqs_queue']
