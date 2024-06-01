@@ -59,16 +59,14 @@ def email_checker(email):
             # replace with normalized form
             logger.info("True")
             valid = True
-            logger.info("after email verify is true")
+            logger.info("Email is verified, valid is true")
         
         else:
-            logger.info("after email verify is false")
+            logger.info("Email is not verified, valid is false")
             valid = False
             
     except Exception as e:
-        logger.info("Email verify failed")
-        # email is not valid, exception message is human-readable
-        print(str(e))
+        logger.info(f"Email is not verified, valid is false. Here is the exception \n{e}")
         valid = False
         
     return valid
@@ -108,8 +106,9 @@ def lambda_handler(event, context):
                     }
                 }
             )
-            logger.info("Successfully sent the contact information to the dynamoDB table")
             
+            logger.info("Successfully sent the contact information to the dynamoDB table")
+
             body_message = f"Thank you. Your submittion was successful" #, {event['body']}"
             response = {
                 "statusCode": 200,
@@ -118,8 +117,7 @@ def lambda_handler(event, context):
                     },
                 "body": body_message
             }
-            
-            
+        
             
             try:
                 #test this block by giving a valid email address
@@ -131,6 +129,7 @@ def lambda_handler(event, context):
             except Exception as e:
                 #test this block by using the wrong sqs url
                 logger.info(f"Failed to send the event to the SQS Queue. Here is the exception \n{e}" )
+                
                 body_message = f"Unfortunately. Your submittion failed." #, {event['body']}"
                 response = {
                     "statusCode": 200,
@@ -144,6 +143,7 @@ def lambda_handler(event, context):
         except Exception as e:
             #test this block by using the wrong dynamoDB table
             logger.info(f"Failed to send the contact information to the DynamoDB Table. Here is the exception \n{e}" )
+            
             body_message = f"Unfortunately. Your information failed to reach its destination." #, {event['body']}"
             response = {
                 "statusCode": 200,
@@ -155,7 +155,8 @@ def lambda_handler(event, context):
 
     else: 
         #test this block by giving an invalid email address
-        logger.info("The email address provided was invalid. Gracfully exit the program")
+        logger.info("The email address provided was invalid. Gracefully exit the program")
+       
         body_message = f"This is not a valid email address. Please try again." #, {event['body']}"
         response = {
             "statusCode": 200,
