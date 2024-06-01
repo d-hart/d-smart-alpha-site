@@ -12,8 +12,35 @@ from datetime import datetime, date, timedelta
 # set logging level- value options = CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-dynamodb_table = "d_smart_email_table"
-sqs_queue_url = "https://sqs.us-east-1.amazonaws.com/919771552066/d_smart_queue.fifo"
+# dynamodb_table = "d_smart_email_table"
+
+
+#Variables start------------------------------------------------------------------------------#
+sqs_queue = os.environ['sqs_queue']
+dynamodb_table = os.environ['email_table']
+function_name = os.environ['function_name']
+input_variable = os.environ['input_variable']
+sqs_queue_url = f"https://sqs.us-east-1.amazonaws.com/{input_variable}/{sqs_queue}.fifo"
+# resume_bucket = os.environ['resume_bucket']
+# report = os.environ['report_name']
+# role_target = os.environ['role_target']
+# topic = os.environ['topic_arn']
+# test_variable = os.environ['test_variable']
+
+regions = ['us-east-1']
+data = []
+output = []
+report_list = []
+#Variables end------------------------------------------------------------------------------#
+
+#Api request body start------------------------------------------------------------------------------#
+# {
+    # "price": "400000",
+    # "size": "1600",
+    # "unit": "sqFt",
+    # "downPayment": "20"
+# }
+#Api request body end------------------------------------------------------------------------------#
 
 #email_checker end------------------------------------------------------------------------------#
 def email_checker(email):
@@ -27,18 +54,19 @@ def email_checker(email):
     regex = r'^[a-z0-9]+[._]?[a-z0-9]+[@]w+[.]w+$'
     try:
         # validate and get info
-        print("before email verify")
+        logger.info("before email verify")
         if re.match(regex, email):
-            print("after email verify")
             # replace with normalized form
-            print("True")
+            logger.info("True")
             valid = True
+            logger.info("after email verify is true")
         
         else:
+            logger.info("after email verify is false")
             valid = False
             
     except Exception as e:
-        print("Email verify failed")
+        logger.info("Email verify failed")
         # email is not valid, exception message is human-readable
         print(str(e))
         valid = False
@@ -46,39 +74,14 @@ def email_checker(email):
     return valid
 #email_checker end------------------------------------------------------------------------------#
 
-#Variables start------------------------------------------------------------------------------#
-# email_table = os.environ['email_table']
-# function_name = os.environ['function_name']
-# sqs_queue = os.environ['sqs_queue']
-# resume_bucket = os.environ['resume_bucket']
-# report = os.environ['report_name']
-# role_dlm = os.environ['role_dlm']
-# role_target = os.environ['role_target']
-# topic = os.environ['topic_arn']
-# test_variable = os.environ['test_variable']
-
-regions = ['us-east-1']
-data = []
-output = []
-report_list = []
-#Api request body start------------------------------------------------------------------------------#
-# {
-    # "price": "400000",
-    # "size": "1600",
-    # "unit": "sqFt",
-    # "downPayment": "20"
-# }
-#Api request body end------------------------------------------------------------------------------#
-
-#Variables end------------------------------------------------------------------------------#
 def lambda_handler(event, context):
     # print(event["body"])
     # print(test_variable)
     dynamodb_client = boto3.client("dynamodb")
     sqs_client = boto3.client("sqs")
     
-    print(f"event type: {type(event)}")
-    print(f"first name: {event['first_name']}")
+    logger.info(f"event type: {type(event)}")
+    logger.info(f"first name: {event['first_name']}")
     # event_body = json.loads(event['body'])
     # print(type(event_body))
     # print(event_body)
@@ -87,10 +90,10 @@ def lambda_handler(event, context):
     last_name = str(event['last_name'])
     
     valid_email = email_checker(event['email'])
-    if email: #valid_email == True:
+    if valid_email == True: #email:
         try:
             #test this block by giving a valid email address
-            db_response = dynamodb_client.put_item(TableName=dynamodb_table,Item={
+            db_response = dynamodb_client.put_item(TableName=email_table,Item={
                 'email': {
                     'S': email
                     },
@@ -99,10 +102,13 @@ def lambda_handler(event, context):
                     },
                 'last_name': {
                     'S': last_name
+                    },
+                'contact': {
+                    'BOOL':True
                     }
                 }
             )
-            logger.info("Writing to the database was successful")
+            logger.info("Successfully sent the contact information to the dynamoDB table")
             
             body_message = f"Thank you. Your submittion was successful" #, {event['body']}"
             response = {
@@ -113,15 +119,18 @@ def lambda_handler(event, context):
                 "body": body_message
             }
             
+            
+            
             try:
                 #test this block by giving a valid email address
                 sqs_response = sqs_client.send_message(QueueUrl=sqs_queue_url,
-                                MessageBody=event
+                                MessageBody=str(event)
                             )
+                logger.info("Successfully sent the event to the sqs queue")
             
             except Exception as e:
                 #test this block by using the wrong sqs url
-                print(f"There was a problem writing to the SQS Queue. Here is the exception \n{e}" )
+                logger.info(f"Failed to send the event to the SQS Queue. Here is the exception \n{e}" )
                 body_message = f"Unfortunately. Your submittion failed." #, {event['body']}"
                 response = {
                     "statusCode": 200,
@@ -134,8 +143,8 @@ def lambda_handler(event, context):
         
         except Exception as e:
             #test this block by using the wrong dynamoDB table
-            logger.info(f"There was a problem writing to the DynamoDB Table. Here is the exception \n{e}" )
-            body_message = f"Unfortunately. Your submittion failed." #, {event['body']}"
+            logger.info(f"Failed to send the contact information to the DynamoDB Table. Here is the exception \n{e}" )
+            body_message = f"Unfortunately. Your information failed to reach its destination." #, {event['body']}"
             response = {
                 "statusCode": 200,
                 "headers": {
@@ -146,6 +155,7 @@ def lambda_handler(event, context):
 
     else: 
         #test this block by giving an invalid email address
+        logger.info("The email address provided was invalid. Gracfully exit the program")
         body_message = f"This is not a valid email address. Please try again." #, {event['body']}"
         response = {
             "statusCode": 200,

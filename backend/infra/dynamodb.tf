@@ -1,6 +1,6 @@
 #Resources start----------------------------------------------------------#
 resource "aws_dynamodb_table" "email_table" {
-  name           = "${var.email_table}"
+  name           = var.email_table
   billing_mode   = "PROVISIONED"
   read_capacity  = 5
   write_capacity = 5

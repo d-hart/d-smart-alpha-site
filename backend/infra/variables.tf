@@ -72,6 +72,11 @@ variable "d_smart_queue" {
   default     = "d_smart_queue"
 }
 
+variable "input_variable" {
+  type    = string
+  default = "919771552066"
+}
+
 variable "email_table" {
   type        = string
   description = "The name of the dynamodb table"
@@ -85,7 +90,7 @@ variable "email_sender" {
   default     = "noreply@d-smart.io"
 }
 
-variable "d_smart_s3_bucket"{
+variable "d_smart_s3_bucket" {
   type        = string
   description = "The name of the s3 bucket"
   default     = "d_smart_s3_bucket"
