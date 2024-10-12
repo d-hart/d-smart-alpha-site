@@ -60,7 +60,7 @@ def lambda_handler(event, context):
             'Bucket': resume_bucket,
             'Key': resume_name
         },
-        ExpiresIn=300,
+        ExpiresIn=3600,
         HttpMethod=None
     )
     
@@ -71,7 +71,7 @@ def lambda_handler(event, context):
       <body>
         <p>Greetings """ +str(customer_dictionary["first_name"])+""",<br>
         <br>
-        Per your request, here is a <a href='"""+str(url)+"""'>link</a> to my current resume. This link will expire in 5 minutes. Thank you for visiting my web application/website. Please take care of yourself.<br>
+        Per your request, here is a <a href='"""+str(url)+"""'>link</a> to my current resume. Access to this link will expire in 1 hour. Thank you for visiting my web application/website. Please let me know if you have any questions and take care of yourself.<br>
         <br>
         Sincerely,<br>
         <br>
@@ -106,29 +106,29 @@ def lambda_handler(event, context):
     print('Program end.')
 
 # Local machine runs only----------------------------------------------------------------------------------------------------------------------------------------#
-# if __name__ == "__main__":
-#     event_api = {
-#         'Records': 
-#         [
-#             {
-#                 'messageId': 'couixz348792-4ccd-9021-90d3-3849038420234', 
-#                 'receiptHandle': 'stuff_on_this_line', 
-#                 'body': '{"first_name": "John", "last_name": "Doe", "email": "johndoe@email.com"}',
-#                 'attributes': {
-#                     'ApproximateReceiveCount': '1', 'AWSTraceHeader': 'Root=1-67dsgsdgfd95901sdgfdsgc176e;Parent=1a34kj5h3k5h433;Sampled=0;Lineage=1:0345435c9:0', 
-#                     'SentTimestamp': '1728512971266', 'SequenceNumber': '188892433df94353647616', 'MessageGroupId': 'Jfdfd8984', 'SenderId': 'gdfgdsfgsdfggsgdf:function_1', 
-#                     'MessageDeduplicationId': '31c51d3307efcbfdsgfgsdfsgsdfgs54461977104e68b0b638932c8', 
-#                     'ApproximateFirstReceiveTimemp': 'lskdfjsdlkfjl323498274'
-#                 }, 
-#                 'messageAttributes': {}, 
-#                 'md5OfBody': 'jkadhfs89732948jsdbfkj298347kjhdsk', 
-#                 'eventSource': 'aws:sqs', 
-#                 'eventSourceARN': 'arn:aws:sqs:us-east-1:319760898065:d_smart_queue.fifo', 
-#                 'awsRegion': 'us-east-1'
-#             }
-#         ]
-#     }
-#     context = ''
-#     lambda_handler(event_api,context)
+if __name__ == "__main__":
+    event_api = {
+        'Records': 
+        [
+            {
+                'messageId': 'couixz348792-4ccd-9021-90d3-3849038420234', 
+                'receiptHandle': 'stuff_on_this_line', 
+                'body': '{"first_name": "John", "last_name": "Doe", "email": "johndoe@email.com"}',
+                'attributes': {
+                    'ApproximateReceiveCount': '1', 'AWSTraceHeader': 'Root=1-67dsgsdgfd95901sdgfdsgc176e;Parent=1a34kj5h3k5h433;Sampled=0;Lineage=1:0345435c9:0', 
+                    'SentTimestamp': '1728512971266', 'SequenceNumber': '188892433df94353647616', 'MessageGroupId': 'Jfdfd8984', 'SenderId': 'gdfgdsfgsdfggsgdf:function_1', 
+                    'MessageDeduplicationId': '31c51d3307efcbfdsgfgsdfsgsdfgs54461977104e68b0b638932c8', 
+                    'ApproximateFirstReceiveTimemp': 'lskdfjsdlkfjl323498274'
+                }, 
+                'messageAttributes': {}, 
+                'md5OfBody': 'jkadhfs89732948jsdbfkj298347kjhdsk', 
+                'eventSource': 'aws:sqs', 
+                'eventSourceARN': 'arn:aws:sqs:us-east-1:319760898065:d_smart_queue.fifo', 
+                'awsRegion': 'us-east-1'
+            }
+        ]
+    }
+    context = ''
+    lambda_handler(event_api,context)
 # Local machine runs only----------------------------------------------------------------------------------------------------------------------------------------#   
     
