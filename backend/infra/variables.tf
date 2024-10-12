@@ -57,7 +57,7 @@ variable "domain_name" {
 variable "stage_name" {
   type        = string
   description = "The name of the stage"
-  default     = "mach-2"
+  default     = "mach-7"
 }
 
 variable "path_part" {
@@ -93,6 +93,6 @@ variable "email_sender" {
 variable "d_smart_s3_bucket" {
   type        = string
   description = "The name of the s3 bucket"
-  default     = "d_smart_s3_bucket"
+  default     = "d-smart-s3-bucket"
 }
 #Variables end----------------------------------------------------------#
