@@ -52,6 +52,7 @@ data "aws_iam_policy_document" "function_2_assume_role_policy" {
     actions = [
       "ses:*",
       "sqs:*",
+      "s3:*"
     ]
   }
 

@@ -16,6 +16,7 @@ resource "aws_route53_record" "ses_verification" {
 
 resource "aws_ses_configuration_set" "d_smart" {
   name = "d_smart_configuration_set"
+  reputation_metrics_enabled = true
 }
 
 output "ses_configuration_set_name" {
