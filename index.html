@@ -221,46 +221,6 @@
       </section>
 
       <!-- CTA -->
-      <script>
-        function submitForm(event) {
-            event.preventDefault(); // Prevent the default form submission
-
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                category: document.getElementById('category').value,
-                priority: document.querySelector('input[name="priority"]:checked').id,
-                human: document.getElementById('human').checked,
-                message: document.getElementById('message').value
-            };
-
-            // Convert form data to JSON
-            const jsonPayload = JSON.stringify(formData);
-
-            // Send the JSON payload to the backend
-            fetch('https://api.d-smart.io/resume_request', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: jsonPayload
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Success:', data);
-                alert('Your request has been submitted successfully!');
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                alert('There was an error submitting your request.');
-            });
-        }
-    </script>
       <section id="cta">
         <section class="box special">
           <a id="form_section">
@@ -330,9 +290,48 @@
               <div class="col-12">
                 <ul class="actions">
                   <!-- The Form -->
-                  <form method="POST" action="api.d-smart.io/resume_request">
-
-                    <li><input href="index.html" type="submit" value="Submit" /></li>
+                  <form>
+                    <script>
+                      function submitForm(event) {
+                          event.preventDefault(); // Prevent the default form submission
+              
+                          const formData = {
+                              name: document.getElementById('name').value,
+                              email: document.getElementById('email').value,
+                              category: document.getElementById('category').value,
+                              priority: document.querySelector('input[name="priority"]:checked').id,
+                              human: document.getElementById('human').checked,
+                              message: document.getElementById('message').value
+                          };
+              
+                          // Convert form data to JSON
+                          const jsonPayload = JSON.stringify(formData);
+              
+                          // Send the JSON payload to the backend
+                          fetch('https://api.d-smart.io/resume_request', {
+                              method: 'POST',
+                              headers: {
+                                  'Content-Type': 'application/json'
+                              },
+                              body: jsonPayload
+                          })
+                          .then(response => {
+                              if (!response.ok) {
+                                  throw new Error('Network response was not ok');
+                              }
+                              return response.json();
+                          })
+                          .then(data => {
+                              console.log('Success:', data);
+                              alert('Your request has been submitted successfully!');
+                          })
+                          .catch((error) => {
+                              console.error('Error:', error);
+                              alert('There was an error submitting your request.');
+                          });
+                      }
+                    </script>
+                    <li><input href="https://api.d-smart.io/resume_request" type="submit" value="Submit" /></li>
                     <li><input type="reset" value="Reset" class="alt" /></li>
                     <!-- <a href="javascript:{}" onclick="document.getElementById('my_form').submit(); return false;">submit</a> -->
                   </form>
