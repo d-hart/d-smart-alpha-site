@@ -15,6 +15,7 @@ from datetime import datetime, date, timedelta
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 # dynamodb_table = "d_smart_email_table"
+origin_domain = "https://d-smart.io"
 
 # api_gateway.tf - line 138
 # "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
@@ -31,15 +32,6 @@ data = []
 output = []
 report_list = []
 #Variables end------------------------------------------------------------------------------#
-
-#Api request body start------------------------------------------------------------------------------#
-# {
-    # "price": "400000",
-    # "size": "1600",
-    # "unit": "sqFt",
-    # "downPayment": "20"
-# }
-#Api request body end------------------------------------------------------------------------------#
 
 #email_checker end------------------------------------------------------------------------------#
 def email_checker(email):
@@ -73,8 +65,18 @@ def email_checker(email):
         
     return valid
 #email_checker end------------------------------------------------------------------------------#
-
 def lambda_handler(event, context):
+    return {
+        'statusCode': 200,
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+            'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
+            'Access-Control-Allow-Methods': 'OPTIONS,POST'
+        },
+        'body': json.dumps('Hello from Lambda!')
+    }
+    
+def lambda_handle(event, context):
     print(event)
     print(type(event))
     string_event_body = str(event['body'])
@@ -102,11 +104,9 @@ def lambda_handler(event, context):
     #     "statusCode": 200,
     #     "headers": {
     #       "Content-Type": "application/json",
-    #       "Access-Control-Allow-Origin" : "*",
-    #       "Allow" : "OPTIONS, POST",
+    #       "Access-Control-Allow-Origin" : origin_domain,
     #       "Access-Control-Allow-Methods" : "OPTIONS, POST",
-    #       "Access-Control-Allow-Headers" : "*"
-                     },
+    #       },
     #     "body": body_message
     #         }
             
@@ -159,11 +159,10 @@ def lambda_handler(event, context):
                 response = {
                     "statusCode": 200,
                     "headers": {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin" : "*",
-                        "Allow" : "OPTIONS, POST",
-                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
-                        "Access-Control-Allow-Headers" : "*"
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin' : origin_domain,
+                        'Access-Control-Allow-Methods' : 'OPTIONS, POST',
+                        'Access-Control-Allow-Headers': 'Content-Type'
                     },
                     "body": body_message
                 }
@@ -176,11 +175,10 @@ def lambda_handler(event, context):
                 response = {
                     "statusCode": 200,
                     "headers": {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin" : "*",
-                        "Allow" : "OPTIONS, POST",
-                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
-                        "Access-Control-Allow-Headers" : "*"
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin' : origin_domain,
+                        'Access-Control-Allow-Methods' : 'OPTIONS, POST',
+                        'Access-Control-Allow-Headers': 'Content-Type'
                     },
                     "body": body_message
                 }
@@ -194,12 +192,11 @@ def lambda_handler(event, context):
             response = {
                 "statusCode": 200,
                 "headers": {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin" : "*",
-                        "Allow" : "OPTIONS, POST",
-                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
-                        "Access-Control-Allow-Headers" : "*"
-                    },
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin' : origin_domain,
+                        'Access-Control-Allow-Methods' : 'OPTIONS, POST',
+                        'Access-Control-Allow-Headers': 'Content-Type'
+                },
                 "body": body_message
             }
 
@@ -211,12 +208,11 @@ def lambda_handler(event, context):
         response = {
             "statusCode": 200,
             "headers": {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin" : "*",
-                        "Allow" : "OPTIONS, POST",
-                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
-                        "Access-Control-Allow-Headers" : "*"
-                    },
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin' : origin_domain,
+                'Access-Control-Allow-Methods' : 'OPTIONS, POST',
+                'Access-Control-Allow-Headers': 'Content-Type'
+            },
             "body": body_message
         }
     
