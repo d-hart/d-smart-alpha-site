@@ -86,9 +86,9 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response" {
         }
   //cors
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'",
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
   }
 
   depends_on = [
@@ -135,9 +135,9 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response_opt
 
   //cors section  //cors
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,Authorization'",
+    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
   }
 
   depends_on = [
@@ -145,7 +145,7 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response_opt
     aws_api_gateway_integration.lambda_integration
   ]
 }
-# #OPTIONS start------------------------------------------------------------------------#
+# #OPTIONS end------------------------------------------------------------------------#
 #Lambda start------------------------------------------------------------------------#
 data "aws_caller_identity" "current" {}
 
