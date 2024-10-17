@@ -110,7 +110,7 @@ resource "aws_api_gateway_integration" "lambda_integration_option" {
   resource_id             = aws_api_gateway_resource.root.id
   http_method             = aws_api_gateway_method.proxy_option.http_method
   integration_http_method = "OPTIONS"
-  type                    = "AWS_PROXY"
+  type                    = "AWS"
   uri                     = module.function_1.lambda_invoke_arn
 }
 
