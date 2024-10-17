@@ -242,9 +242,8 @@
             fetch('https://api.d-smart.io/resume_request', {
                 method: 'POST',
                 headers: {
-                    'Access-Control-Allow-Headers': 'Content-Type,Authorization',
-                    'Access-Control-Allow-Origin': 'https://api.d-smart.io/resume_request',
-                    'Access-Control-Allow-Methods': 'OPTIONS,POST'
+                    'Content-Type':'application/json',
+                    'Master':'Durell'
                 },
                 body: jsonPayload
             })
