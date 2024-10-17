@@ -16,7 +16,8 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 # dynamodb_table = "d_smart_email_table"
 
-
+# api_gateway.tf - line 138
+# "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
 #Variables start------------------------------------------------------------------------------#
 sqs_queue = os.environ['sqs_queue']
 dynamodb_table = os.environ['email_table']
@@ -74,10 +75,13 @@ def email_checker(email):
 #email_checker end------------------------------------------------------------------------------#
 
 def lambda_handler(event, context):
-    string_event = str(event)
-    print(string_event)
-    # updated_string_event = string_event.replace("\'", "\"")
-    # event_body = json.loads(updated_string_event)
+    print(event)
+    print(type(event))
+    string_event_body = str(event['body'])
+    updated_string_event_body = string_event_body.replace("\'", "\"")
+    event_body = json.loads(updated_string_event_body)
+    # print(event_body)
+    # print(type(event_body))
     
     dynamodb_client = boto3.client("dynamodb")
     sqs_client = boto3.client("sqs")
@@ -87,11 +91,28 @@ def lambda_handler(event, context):
     
     # Define the dictionary to be used later----------------------------------------------------------------------------------------------------------------------------------------#
    
-    customer_dictionary["email"] = str(event["email"])
-    customer_dictionary["first_name"] = str(event["first_name"])
-    customer_dictionary["last_name"] = str(event["last_name"])
+    customer_dictionary["email"] = str(event_body["email"])
+    customer_dictionary["first_name"] = str(event_body["first_name"])
+    customer_dictionary["last_name"] = str(event_body["last_name"])
     
-    valid_email = email_checker(event['email'])
+    # Test response block
+    # print(f"Customer_dictionary: {customer_dictionary}")
+    # body_message = f"Thank you. Your post was successful" #, {event_body['body']}"
+    # response = {
+    #     "statusCode": 200,
+    #     "headers": {
+    #       "Content-Type": "application/json",
+    #       "Access-Control-Allow-Origin" : "*",
+    #       "Allow" : "OPTIONS, POST",
+    #       "Access-Control-Allow-Methods" : "OPTIONS, POST",
+    #       "Access-Control-Allow-Headers" : "*"
+                     },
+    #     "body": body_message
+    #         }
+            
+    # return response
+    
+    valid_email = email_checker(customer_dictionary['email'])
     if valid_email == True: #email:
         # Send the client information to dynamoDB----------------------------------------------------------------------------------------------------------------------------------------#
         try:
@@ -114,25 +135,39 @@ def lambda_handler(event, context):
             
             logger.info("Successfully sent the contact information to the dynamoDB table")
 
-            body_message = f"Thank you. Your submittion was successful" #, {event['body']}"
-            response = {
-                "statusCode": 200,
-                "headers": {
-                    "Content-Type": "application/json"
-                    },
-                "body": body_message
-            }
-        
+            
+            # Format the payload----------------------------------------------------------------------------------------------------------------------------------------#
+            try:
+                message_payload = json.dumps(customer_dictionary)
+                print(f'message_payload: {message_payload}')
+            
+            except Exception as e:
+                # Failed to convert the message payload.
+                logger.info(f"Failed to convert the message payload. Here is the exception \n{e}" )
+                
             # Send the payload to SQS for processing----------------------------------------------------------------------------------------------------------------------------------------#
             try:
                 #test this block by giving a valid email address
                 random_message_group_id = ''.join(random.choices(string.ascii_letters,k=7))
                 sqs_response = sqs_client.send_message(QueueUrl=sqs_queue_url,
-                                MessageBody=str(event),
+                                MessageBody=message_payload,
                                 MessageGroupId = random_message_group_id
                             )
                 logger.info("Successfully sent the event to the sqs queue")
             
+                body_message = f"Thank you. Your submittion was successful" #, {event['body']}"
+                response = {
+                    "statusCode": 200,
+                    "headers": {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin" : "*",
+                        "Allow" : "OPTIONS, POST",
+                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
+                        "Access-Control-Allow-Headers" : "*"
+                    },
+                    "body": body_message
+                }
+                
             except Exception as e:
                 #test this block by using the wrong sqs url
                 logger.info(f"Failed to send the event to the SQS Queue. Here is the exception \n{e}" )
@@ -141,8 +176,12 @@ def lambda_handler(event, context):
                 response = {
                     "statusCode": 200,
                     "headers": {
-                        "Content-Type": "application/json"
-                        },
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin" : "*",
+                        "Allow" : "OPTIONS, POST",
+                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
+                        "Access-Control-Allow-Headers" : "*"
+                    },
                     "body": body_message
                 }
             
@@ -155,7 +194,11 @@ def lambda_handler(event, context):
             response = {
                 "statusCode": 200,
                 "headers": {
-                    "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin" : "*",
+                        "Allow" : "OPTIONS, POST",
+                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
+                        "Access-Control-Allow-Headers" : "*"
                     },
                 "body": body_message
             }
@@ -168,16 +211,15 @@ def lambda_handler(event, context):
         response = {
             "statusCode": 200,
             "headers": {
-                "Content-Type": "application/json"
-                },
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin" : "*",
+                        "Allow" : "OPTIONS, POST",
+                        "Access-Control-Allow-Methods" : "OPTIONS, POST",
+                        "Access-Control-Allow-Headers" : "*"
+                    },
             "body": body_message
         }
     
     return response
     
-    #Ingest the event information from the front end website
-    #Filter out the important information
-    #Log the user's information into a DynamoDB table
-    #Send the information to the SQS queue to be processed by the second lambda function
-    #Service - DynamoDB, SQS, Cloudwatch
-    
+
