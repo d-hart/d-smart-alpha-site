@@ -20,7 +20,7 @@ module "function_2" {
   assume_role   = aws_iam_role.lambda_exec_role_2.arn
   environment_vars = {
     function_name = "${var.function_1}"
-    resume_bucket     = "${var.d_smart_s3_bucket}"
+    resume_bucket = "${var.d_smart_s3_bucket}"
   }
 }
 

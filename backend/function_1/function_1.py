@@ -69,7 +69,7 @@ def lambda_handler(event, context):
     return {
         'statusCode': 200,
         'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+            'Access-Control-Allow-Headers': 'Content-Type,Master',
             'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
             'Access-Control-Allow-Methods': 'OPTIONS,POST'
         },

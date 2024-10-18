@@ -14,25 +14,16 @@ resource "aws_api_gateway_resource" "root" {
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
   depends_on = [
     aws_api_gateway_integration.lambda_integration
   ]
-    # aws_api_gateway_integration.lambda_integration_option,
-  
+  # aws_api_gateway_integration.lambda_integration_option,
+
   lifecycle {
     create_before_destroy = false
   }
-  rest_api_id = aws_api_gateway_rest_api.api.id
   #   stage_name  = var.stage_name
-}
-
-#API Gateway end------------------------------------------------------------------------#
-#POST start------------------------------------------------------------------------#
-resource "aws_api_gateway_method" "proxy" {
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.root.id
-  http_method   = "POST"
-  authorization = "NONE"
 }
 
 resource "aws_api_gateway_method_settings" "api_method_settings" {
@@ -51,6 +42,16 @@ resource "aws_api_gateway_stage" "api_stage" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = var.stage_name
 }
+
+#API Gateway end------------------------------------------------------------------------#
+#POST start------------------------------------------------------------------------#
+resource "aws_api_gateway_method" "proxy" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.root.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
 
 resource "aws_api_gateway_integration" "lambda_integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
@@ -81,12 +82,12 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response" {
   resource_id = aws_api_gateway_resource.root.id
   http_method = aws_api_gateway_method.proxy.http_method
   status_code = aws_api_gateway_method_response.proxy.status_code
-  response_templates  = {
-        "application/json" = ""
-        }
+  response_templates = {
+    "application/json" = ""
+  }
   //cors
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Master'",
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
     "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
   }
@@ -99,7 +100,7 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response" {
 #POST end------------------------------------------------------------------------#
 
 # #OPTIONS start------------------------------------------------------------------------#
-resource "aws_api_gateway_method" "proxy_option" {
+resource "aws_api_gateway_method" "option_method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   resource_id   = aws_api_gateway_resource.root.id
   http_method   = "OPTIONS"
@@ -108,16 +109,20 @@ resource "aws_api_gateway_method" "proxy_option" {
 resource "aws_api_gateway_integration" "lambda_integration_option" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.root.id
-  http_method             = aws_api_gateway_method.proxy_option.http_method
+  http_method             = aws_api_gateway_method.option_method.http_method
   integration_http_method = "OPTIONS"
-  type                    = "AWS"
-  uri                     = module.function_1.lambda_invoke_arn
+  type                    = "MOCK"
+  # uri                     = module.function_1.lambda_invoke_arn
+  passthrough_behavior = "NEVER"
+  request_templates = {
+    "application/json" = ""
+  }
 }
 
-resource "aws_api_gateway_method_response" "proxy_option" {
+resource "aws_api_gateway_method_response" "option_method_response" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.root.id
-  http_method = aws_api_gateway_method.proxy_option.http_method
+  http_method = aws_api_gateway_method.option_method.http_method
   status_code = "200"
 
   response_parameters = {
@@ -130,18 +135,18 @@ resource "aws_api_gateway_method_response" "proxy_option" {
 resource "aws_api_gateway_integration_response" "lambda_integration_response_option" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.root.id
-  http_method = aws_api_gateway_method.proxy_option.http_method
-  status_code = aws_api_gateway_method_response.proxy_option.status_code
+  http_method = aws_api_gateway_method.option_method.http_method
+  status_code = aws_api_gateway_method_response.option_method_response.status_code
 
   //cors section  //cors
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Master'",
-    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods" = "'*'",
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
 
   depends_on = [
-    aws_api_gateway_method.proxy_option,
+    aws_api_gateway_method.option_method,
     aws_api_gateway_integration.lambda_integration
   ]
 }
