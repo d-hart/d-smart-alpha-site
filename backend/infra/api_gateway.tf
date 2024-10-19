@@ -15,15 +15,18 @@ resource "aws_api_gateway_resource" "root" {
 
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  depends_on = [
-    aws_api_gateway_integration.lambda_integration
-  ]
-  # aws_api_gateway_integration.lambda_integration_option,
-
-  lifecycle {
-    create_before_destroy = false
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.root.id,
+      aws_api_gateway_method.proxy.id,
+      aws_api_gateway_integration.lambda_integration.id,
+      aws_api_gateway_method.option_method.id,
+      aws_api_gateway_integration.integration_option.id
+    ]))
   }
-  #   stage_name  = var.stage_name
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_api_gateway_method_settings" "api_method_settings" {
@@ -41,6 +44,7 @@ resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = var.stage_name
+
 }
 
 #API Gateway end------------------------------------------------------------------------#
@@ -50,6 +54,9 @@ resource "aws_api_gateway_method" "proxy" {
   resource_id   = aws_api_gateway_resource.root.id
   http_method   = "POST"
   authorization = "NONE"
+  # request_parameters = {
+  #   "method.request.path.proxy" = true
+  # }
 }
 
 
@@ -59,44 +66,39 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   http_method             = aws_api_gateway_method.proxy.http_method
   content_handling        = "CONVERT_TO_TEXT"
   integration_http_method = "POST"
-  type                    = "AWS"
+  type                    = "AWS_PROXY"
   uri                     = module.function_1.lambda_invoke_arn
 }
 
-resource "aws_api_gateway_method_response" "proxy" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.root.id
-  http_method = aws_api_gateway_method.proxy.http_method
-  status_code = "200"
+# resource "aws_api_gateway_method_response" "proxy" {
+#   rest_api_id = aws_api_gateway_rest_api.api.id
+#   resource_id = aws_api_gateway_resource.root.id
+#   http_method = aws_api_gateway_method.proxy.http_method
+#   status_code = "200"
 
-  //cors section
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
-  }
-}
+#   //cors section
+#   response_parameters = {
+#     "method.response.header.Access-Control-Allow-Headers" = true,
+#     "method.response.header.Access-Control-Allow-Methods" = true,
+#     "method.response.header.Access-Control-Allow-Origin"  = true
+#   }
+# }
 
-resource "aws_api_gateway_integration_response" "lambda_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.root.id
-  http_method = aws_api_gateway_method.proxy.http_method
-  status_code = aws_api_gateway_method_response.proxy.status_code
-  response_templates = {
-    "application/json" = ""
-  }
-  //cors
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Methods" = "'OPTIONS,POST'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
-  }
+# resource "aws_api_gateway_integration_response" "lambda_integration_response" {
+#   rest_api_id = aws_api_gateway_rest_api.api.id
+#   resource_id = aws_api_gateway_resource.root.id
+#   http_method = aws_api_gateway_method.proxy.http_method
+#   status_code = aws_api_gateway_method_response.proxy.status_code
+#   //cors
+#   response_parameters = {
+#     "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
+#   }
 
-  depends_on = [
-    aws_api_gateway_method.proxy,
-    aws_api_gateway_integration.lambda_integration
-  ]
-}
+#   depends_on = [
+#     aws_api_gateway_method.proxy,
+#     aws_api_gateway_integration.lambda_integration
+#   ]
+# }
 #POST end------------------------------------------------------------------------#
 
 # #OPTIONS start------------------------------------------------------------------------#
@@ -106,17 +108,16 @@ resource "aws_api_gateway_method" "option_method" {
   http_method   = "OPTIONS"
   authorization = "NONE"
 }
-resource "aws_api_gateway_integration" "lambda_integration_option" {
+
+resource "aws_api_gateway_integration" "integration_option" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.root.id
   http_method             = aws_api_gateway_method.option_method.http_method
   integration_http_method = "OPTIONS"
+  content_handling        = "CONVERT_TO_TEXT"
   type                    = "MOCK"
   # uri                     = module.function_1.lambda_invoke_arn
   passthrough_behavior = "NEVER"
-  request_templates = {
-    "application/json" = ""
-  }
 }
 
 resource "aws_api_gateway_method_response" "option_method_response" {
@@ -131,8 +132,8 @@ resource "aws_api_gateway_method_response" "option_method_response" {
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
 }
-
-resource "aws_api_gateway_integration_response" "lambda_integration_response_option" {
+# curl -v -X OPTIONS https://api.d-smart.io
+resource "aws_api_gateway_integration_response" "integration_response_option" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.root.id
   http_method = aws_api_gateway_method.option_method.http_method
@@ -140,14 +141,14 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response_opt
 
   //cors section  //cors
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Methods" = "'*'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type'",
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'",
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
   }
 
   depends_on = [
     aws_api_gateway_method.option_method,
-    aws_api_gateway_integration.lambda_integration
+    aws_api_gateway_integration.integration_option
   ]
 }
 # #OPTIONS end------------------------------------------------------------------------#
