@@ -81,7 +81,7 @@ resource "aws_api_gateway_integration_response" "lambda_integration_response" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type'",
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io/'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
   }
 
   depends_on = [
@@ -139,7 +139,7 @@ resource "aws_api_gateway_integration_response" "integration_response_option" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type'",
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io/'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'https://d-smart.io'"
   }
 
   depends_on = [

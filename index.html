@@ -309,18 +309,17 @@
                   <!-- <option value="1">Project Management</option> -->
                 </select>
               </div>
-              <div class="col-4 col-12-narrower">
-                <input type="radio" id="full_time" name="role_type" checked />
-                <label for="role_type">Full Time Role</label>
-              </div>
-              <div class="col-4 col-12-narrower">
-                <input type="radio" id="contract" name="role_type" />
-                <label for="role_type">Contract Role</label>
-              </div>
-              <div class="col-4 col-12-narrower">
-                <input type="radio" id="corp_to_corp" name="role_type" />
-                <label for="role_type">Corp to Corp</label>
-              </div>
+              <fieldset>
+                <legend>Please select one of the following</legend>
+                <div class="col-4 col-12-narrower">
+                  <input type="radio" id="full_time" name="role_type"/><label for="full_time">Full Time Role</label>
+                </div>
+                <div class="col-4 col-12-narrower">
+                  <input type="radio" id="contract" name="role_type"/><label for="contract">Contract Role</label>
+                </div>
+                <div class="col-4 col-12-narrower">
+                  <input type="radio" id="corp_to_corp" name="role_type"/><label for="corp_to_corp">Corp to Corp</label>
+              </fieldset>
               <!-- <div class="col-6 col-12-narrower">
                 <input type="checkbox" id="copy" name="copy" />
                 <label for="copy">Email me a copy of this message</label>

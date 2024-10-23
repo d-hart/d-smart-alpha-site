@@ -65,17 +65,17 @@ def email_checker(email):
         
     return valid
 #email_checker end------------------------------------------------------------------------------#
-def lambda_handler(event, context):
-    return {
-        'statusCode': 200,
-        'headers': {
+# def test_lambda_handler(event, context):
+#     return {
+#         'statusCode': 200,
+#         'headers': {
 
-            'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
-        },
-        'body': json.dumps('Hello from Lambda!')
-    }
+#             'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
+#         },
+#         'body': json.dumps('Hello from Lambda!')
+#     }
     
-def fake_lambda_handler(event, context):
+def lambda_handler(event, context):
     print(event)
     print(type(event))
     string_event_body = str(event['body'])
@@ -96,20 +96,6 @@ def fake_lambda_handler(event, context):
     customer_dictionary["first_name"] = str(event_body["first_name"])
     customer_dictionary["last_name"] = str(event_body["last_name"])
     
-    # Test response block
-    # print(f"Customer_dictionary: {customer_dictionary}")
-    # body_message = f"Thank you. Your post was successful" #, {event_body['body']}"
-    # response = {
-    #     "statusCode": 200,
-    #     "headers": {
-    #       "Content-Type": "application/json",
-    #       "Access-Control-Allow-Origin" : origin_domain,
-    #       "Access-Control-Allow-Methods" : "OPTIONS, POST",
-    #       },
-    #     "body": body_message
-    #         }
-            
-    # return response
     
     valid_email = email_checker(customer_dictionary['email'])
     if valid_email == True: #email:
@@ -156,12 +142,9 @@ def fake_lambda_handler(event, context):
             
                 body_message = f"Thank you. Your submittion was successful" #, {event['body']}"
                 response = {
-                    "statusCode": 200,
-                    "headers": {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin' : origin_domain,
-                        'Access-Control-Allow-Methods' : 'OPTIONS, POST',
-                        'Access-Control-Allow-Headers': 'Content-Type'
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
                     },
                     "body": body_message
                 }
@@ -172,12 +155,9 @@ def fake_lambda_handler(event, context):
                 
                 body_message = f"Unfortunately. Your submittion failed." #, {event['body']}"
                 response = {
-                    "statusCode": 200,
-                    "headers": {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin' : origin_domain,
-                        'Access-Control-Allow-Methods' : 'OPTIONS, POST',
-                        'Access-Control-Allow-Headers': 'Content-Type'
+                    'statusCode': 200,
+                    'headers': {
+                        'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
                     },
                     "body": body_message
                 }
@@ -189,12 +169,9 @@ def fake_lambda_handler(event, context):
             
             body_message = f"Unfortunately. Your information failed to reach its destination." #, {event['body']}"
             response = {
-                "statusCode": 200,
-                "headers": {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin' : origin_domain,
-                        'Access-Control-Allow-Methods' : 'OPTIONS, POST',
-                        'Access-Control-Allow-Headers': 'Content-Type'
+                'statusCode': 200,
+                'headers': {
+                    'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
                 },
                 "body": body_message
             }
@@ -205,12 +182,9 @@ def fake_lambda_handler(event, context):
        
         body_message = f"This is not a valid email address. Please try again." #, {event['body']}"
         response = {
-            "statusCode": 200,
-            "headers": {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin' : origin_domain,
-                'Access-Control-Allow-Methods' : 'OPTIONS, POST',
-                'Access-Control-Allow-Headers': 'Content-Type'
+            'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': origin_domain, #"https://d-smart.io"
             },
             "body": body_message
         }
