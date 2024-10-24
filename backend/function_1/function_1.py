@@ -103,7 +103,7 @@ def lambda_handler(event, context):
     customer_dictionary["email"] = str(json_dict_event_body["email"])
     customer_dictionary["first_name"] = str(json_dict_event_body["first_name"])
     customer_dictionary["last_name"] = str(json_dict_event_body["last_name"])
-    customer_dictionary["category"] = str(json_dict_event_body["category"])
+    customer_dictionary["technical_role"] = str(json_dict_event_body["technical_role"])
     customer_dictionary["role_type"] = str(json_dict_event_body["role_type"])
     customer_dictionary["message"] = str(json_dict_event_body["message"])
     
@@ -123,8 +123,8 @@ def lambda_handler(event, context):
                 'last_name': {
                     'S': customer_dictionary["last_name"]
                     },
-                'category': {
-                    'S': customer_dictionary["category"]
+                'technical_role': {
+                    'S': customer_dictionary["technical_role"]
                     },
                 'role_type': {
                     'S': customer_dictionary["role_type"]

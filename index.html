@@ -222,6 +222,11 @@
 
       <!-- CTA -->
       <script>
+        // function changed(id){
+        //   if(id == "human_checkbox"){ // custom test
+        //     document.getElementById("submit_button").removeAttribute("disabled");
+        //   }
+        // }
         function submitForm(event) {
             event.preventDefault(); // Prevent the default form submission
 
@@ -229,7 +234,7 @@
                 first_name: document.getElementById('first_name').value,
                 last_name: document.getElementById('last_name').value,
                 email: document.getElementById('email').value,
-                category: document.getElementById('category').value,
+                technical_role: document.getElementById('category').value,
                 role_type: document.querySelector('input[name="role_type"]:checked').id,
                 human_checkbox: document.getElementById('human_checkbox').checked,
                 message: document.getElementById('message').value
@@ -300,36 +305,33 @@
                 />
               </div>
               <div class="col-12">
-                <select name="category" id="category">
-                  <option value="">- Category -</option>
-                  <option value="python_aws_cloud_development">Python AWS Cloud Development</option>
-                  <option value="kubernetes_system_administration">Kubernetes System Administration</option>
+                <select name="technical_role" id="technical_role">
+                  <option value="">- Technical Role -</option>
+                  <option value="python_aws_cloud_development">Python AWS Serveless Cloud Development</option>
                   <option value="red_hat_system_adminstration">Red Hat System Adminstration</option>
+                  <option value="kubernetes_system_administration">Kubernetes System Administration</option>
+                  <option value="platform_engineer">Platform Engineer</option>
                   <!-- <option value="1">Kubernetes Adminstration</option> -->
                   <!-- <option value="1">Project Management</option> -->
                 </select>
               </div>
+            
               <div class="col-4 col-12-narrower">
-                <input type="radio" id="full_time" name="role_type" checked />
-                <label for="role_type">Full Time Role</label>
+                <input type="radio" id="full_time" name="role_type" /><label for="full_time">Full Time Role</label>
               </div>
               <div class="col-4 col-12-narrower">
-                <input type="radio" id="contract" name="role_type" />
-                <label for="role_type">Contract Role</label>
+                <input type="radio" id="contract" name="role_type" /><label for="contract">Contract Role</label>
               </div>
               <div class="col-4 col-12-narrower">
-                <input type="radio" id="corp_to_corp" name="role_type" />
-                <label for="role_type">Corp to Corp</label>
+                <input type="radio" id="corp_to_corp" name="role_type" /><label for="corp_to_corp">Corp to Corp</label> 
               </div>
+
               <!-- <div class="col-6 col-12-narrower">
-                <input type="checkbox" id="copy" name="copy" />
-                <label for="copy">Email me a copy of this message</label>
+                <input type="checkbox" id="human_checkbox" name="human_checkbox" onclick="changed(id);"/>   
+                <label for="human_checkbox" >I am a human and not a robot</label>
               </div> -->
-              <div class="col-6 col-12-narrower">
-                <input type="checkbox" id="human_checkbox" name="human_checkbox" /> <!--checked -->
-                <label for="human_checkbox">I am a human and not a robot</label>
-              </div>
               <div class="col-12">
+                <legend>Please check your "Junk" or "Spam" inbox for the requested resume link</legend>
                 <textarea
                   name="message"
                   id="message"
@@ -339,8 +341,8 @@
               </div>
               <div class="col-12">
                 <ul class="actions">
-                  <li><input type="submit" value="Submit" /></li>
-                  <li><input type="reset" value="Reset" class="alt" /></li>
+                  <li><input id="submit_button" type="submit" value="Submit" disabled/></li>
+                  <li><input id="reset" type="reset" value="Reset" class="alt" /></li>
                 </ul>
               </div>
             </div>
