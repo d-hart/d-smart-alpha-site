@@ -107,7 +107,8 @@ def lambda_handler(event, context):
     customer_dictionary["role_type"] = str(json_dict_event_body["role_type"])
     customer_dictionary["message"] = str(json_dict_event_body["message"])
     
-    
+    print(f'first_name: {customer_dictionary["first_name"]}')
+    print(f'email: {customer_dictionary["email"]}')
     valid_email = email_checker(customer_dictionary['email'])
     if valid_email == True: #email:
         # Send the client information to dynamoDB----------------------------------------------------------------------------------------------------------------------------------------#

@@ -103,11 +103,11 @@ def lambda_handler(event, context):
             },
             Message=message
         )
-        print(f"You successfully sent the email to {customer_dictionary["email"]}") # muzzle mode replace with test_receive_email_address
+        print(f'You successfully sent the email to {customer_dictionary["email"]}') # muzzle mode replace with test_receive_email_address
         
     except Exception as e:
                 # test this block by sending an invalid email
-                logger.info(f"Failed to send the email to {customer_dictionary["email"]}. Here is the exception \n{e}" ) # muzzle mode replace with test_receive_email_address
+                logger.info(f'Failed to send the email to {customer_dictionary["email"]}. Here is the exception \n{e}' ) # muzzle mode replace with test_receive_email_address
                 
     print('Program end.')
 
