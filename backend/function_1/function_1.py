@@ -17,8 +17,6 @@ logger.setLevel(logging.INFO)
 # dynamodb_table = "d_smart_email_table"
 origin_domain = "https://d-smart.io"
 
-# api_gateway.tf - line 138
-# "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
 #Variables start------------------------------------------------------------------------------#
 sqs_queue = os.environ['sqs_queue']
 dynamodb_table = os.environ['email_table']
@@ -76,13 +74,23 @@ def email_checker(email):
 #     }
     
 def lambda_handler(event, context):
-    print(event)
-    print(type(event))
-    string_event_body = str(event['body'])
-    updated_string_event_body = string_event_body.replace("\'", "\"")
-    event_body = json.loads(updated_string_event_body)
-    # print(event_body)
-    # print(type(event_body))
+    # {
+    #     'first_name': 'John', 
+    #     'last_name': 'Doe', 
+    #     'email': 'johndoe@testemail.com', 
+    #     'category': 'python_aws_cloud_development', 
+    #     'role_type': 'full_time', 
+    #     'human_checkbox': True, 
+    #     'message': 'My company loves you and I would like to have a copy of your resume.'
+    # }
+
+    json_string_event_body = json.dumps(event)
+    json_dict_event_body = json.loads(json_string_event_body)
+    updated_json_string_event_body = json_string_event_body.replace("\'", "\"")    
+    # print(f"json_string_event_body: {json_string_event_body}")
+    # print(f"json_string_event_body type: {type(json_string_event_body)}")
+    # print(f"json_dict_event_body: {json_dict_event_body}")
+    # print(f"json_dict_event_body type: {type(json_dict_event_body)}")
     
     dynamodb_client = boto3.client("dynamodb")
     sqs_client = boto3.client("sqs")
@@ -92,9 +100,12 @@ def lambda_handler(event, context):
     
     # Define the dictionary to be used later----------------------------------------------------------------------------------------------------------------------------------------#
    
-    customer_dictionary["email"] = str(event_body["email"])
-    customer_dictionary["first_name"] = str(event_body["first_name"])
-    customer_dictionary["last_name"] = str(event_body["last_name"])
+    customer_dictionary["email"] = str(json_dict_event_body["email"])
+    customer_dictionary["first_name"] = str(json_dict_event_body["first_name"])
+    customer_dictionary["last_name"] = str(json_dict_event_body["last_name"])
+    customer_dictionary["category"] = str(json_dict_event_body["category"])
+    customer_dictionary["role_type"] = str(json_dict_event_body["role_type"])
+    customer_dictionary["message"] = str(json_dict_event_body["message"])
     
     
     valid_email = email_checker(customer_dictionary['email'])
@@ -112,6 +123,15 @@ def lambda_handler(event, context):
                 'last_name': {
                     'S': customer_dictionary["last_name"]
                     },
+                'category': {
+                    'S': customer_dictionary["category"]
+                    },
+                'role_type': {
+                    'S': customer_dictionary["role_type"]
+                    },
+                'message': {
+                    'S': customer_dictionary["message"]
+                    },
                 'contact': {
                     'BOOL':True
                     }
@@ -122,20 +142,20 @@ def lambda_handler(event, context):
 
             
             # Format the payload----------------------------------------------------------------------------------------------------------------------------------------#
-            try:
-                message_payload = json.dumps(customer_dictionary)
-                print(f'message_payload: {message_payload}')
+            # try:
+            #     message_payload = json.dumps(customer_dictionary)
+            #     print(f'message_payload: {message_payload}')
             
-            except Exception as e:
-                # Failed to convert the message payload.
-                logger.info(f"Failed to convert the message payload. Here is the exception \n{e}" )
+            # except Exception as e:
+            #     # Failed to convert the message payload.
+            #     logger.info(f"Failed to convert the message payload. Here is the exception \n{e}" )
                 
             # Send the payload to SQS for processing----------------------------------------------------------------------------------------------------------------------------------------#
             try:
                 #test this block by giving a valid email address
                 random_message_group_id = ''.join(random.choices(string.ascii_letters,k=7))
                 sqs_response = sqs_client.send_message(QueueUrl=sqs_queue_url,
-                                MessageBody=message_payload,
+                                MessageBody=json_string_event_body,
                                 MessageGroupId = random_message_group_id
                             )
                 logger.info("Successfully sent the event to the sqs queue")

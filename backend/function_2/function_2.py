@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 
 # set logging level- value options = CRITICAL, ERROR, WARNING, INFO, DEBUG, NOTSET
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 domain_email_address = 'no-reply@d-smart.io'
 test_receive_email_address = 'durellhart@live.com'
 
@@ -32,24 +32,24 @@ def lambda_handler(event, context):
     s3_client = boto3.client('s3')
     
     # Filter out the email and first name from the first function & SQS Queue----------------------------------------------------------------------------------------------------------------------------------------#
-    print(f"event: {event}")
+    # print(f"event: {event['Records']}")
 
     for element in event['Records']:
-        print(f"type: {type(element['body'])}")
-        print(f"element: {element['body']}")
+        print(f"element body: {element['body']}")
+        print(f"element body type: {type(element['body'])}")
         customer_dictionary = {}
         # element_body_object = element['body'].replace("\'", "\"")
-        event_json_object = json.loads(element['body'])
-        print(type(event_json_object))
-        print(event_json_object)
+        json_dict_event_body = json.loads(element['body'])
+        print(f"json_dict_event_body: {json_dict_event_body}")
+        print(f"json_dict_event_body type: {type(json_dict_event_body)}")
         
-        customer_dictionary["email"] = str(event_json_object["email"])
-        customer_dictionary["first_name"] = str(event_json_object["first_name"])
-        customer_dictionary["last_name"] = str(event_json_object["last_name"])
+        customer_dictionary["email"] = str(json_dict_event_body["email"])
+        customer_dictionary["first_name"] = str(json_dict_event_body["first_name"])
+        customer_dictionary["last_name"] = str(json_dict_event_body["last_name"])
     
-    print(customer_dictionary)
+    # print(f"customer_dictionary: {customer_dictionary}")
+    # print(f'First Name: {json_dict_event_body["first_name"]}')
     # Reach out to AWS S3 bucket to get a link to the resume document----------------------------------------------------------------------------------------------------------------------------------------#
-    print(f'First Name: {event_json_object["first_name"]}')
     
     bucket_objects = s3_client.list_objects(
         Bucket=resume_bucket)
@@ -65,9 +65,10 @@ def lambda_handler(event, context):
             'Bucket': resume_bucket,
             'Key': resume_name
         },
-        ExpiresIn=3600,
+        ExpiresIn=86400,
         HttpMethod=None
     )
+    print(f"S3 url: {url}")
     
     # Format the information to be sent to SES with the S3 link----------------------------------------------------------------------------------------------------------------------------------------#
     html = """\
@@ -76,7 +77,7 @@ def lambda_handler(event, context):
       <body>
         <p>Greetings """ +str(customer_dictionary["first_name"])+""",<br>
         <br>
-        Per your request, here is a <a href='"""+str(url)+"""'>link</a> to my current resume. Access to this link will expire in 1 hour. Thank you for visiting my web application/website. Please let me know if you have any questions and take care of yourself.<br>
+        Per your request, here is a <a href='"""+str(url)+"""'>link</a> to my current resume. Access to this link will expire in 24 hours. Thank you for visiting my web application/website. Please let me know if you have any questions and take care of yourself.<br>
         <br>
         Sincerely,<br>
         <br>
@@ -97,42 +98,46 @@ def lambda_handler(event, context):
             Source=domain_email_address,
             Destination={
                 'ToAddresses': [
-                    test_receive_email_address, # muzzle mode replace with customer_dictionary["email"]
+                    customer_dictionary["email"], # muzzle mode replace with test_receive_email_address
                 ]
             },
             Message=message
         )
-        print(f"You successfully sent the email to {test_receive_email_address}") # muzzle mode replace with customer_dictionary["email"]
+        print(f"You successfully sent the email to {customer_dictionary["email"]}") # muzzle mode replace with test_receive_email_address
         
     except Exception as e:
                 # test this block by sending an invalid email
-                logger.info(f"Failed to send the email to {test_receive_email_address}. Here is the exception \n{e}" ) # muzzle mode replace with customer_dictionary["email"]
+                logger.info(f"Failed to send the email to {customer_dictionary["email"]}. Here is the exception \n{e}" ) # muzzle mode replace with test_receive_email_address
                 
     print('Program end.')
 
 # Local machine runs only----------------------------------------------------------------------------------------------------------------------------------------#
 # if __name__ == "__main__":
-#     event_api = {
-#         'Records': 
-#         [
+# event: {
+#     'Records': [
+#         {
+#             'messageId': '23c783dd-f4c50a', 
+#             'receiptHandle': 'AQqwredfsEBdq', 
+#             'body': '{"first_name": "John", "last_name": "Doe", "email": "johndoe@testemail.com", "category": "python_aws_cloud_development", "role_type": "full_time", "human_checkbox": true, "message": "My company loves you and I would like to have a copy of your resume."}', 
+#             'attributes': 
 #             {
-#                 'messageId': 'couixz348792-4ccd-9021-90d3-3849038420234', 
-#                 'receiptHandle': 'stuff_on_this_line', 
-#                 'body': '{"first_name": "John", "last_name": "Doe", "email": "johndoe@email.com"}',
-#                 'attributes': {
-#                     'ApproximateReceiveCount': '1', 'AWSTraceHeader': 'Root=1-67dsgsdgfd95901sdgfdsgc176e;Parent=1a34kj5h3k5h433;Sampled=0;Lineage=1:0345435c9:0', 
-#                     'SentTimestamp': '1728512971266', 'SequenceNumber': '188892433df94353647616', 'MessageGroupId': 'Jfdfd8984', 'SenderId': 'gdfgdsfgsdfggsgdf:function_1', 
-#                     'MessageDeduplicationId': '31c51d3307efcbfdsgfgsdfsgsdfgs54461977104e68b0b638932c8', 
-#                     'ApproximateFirstReceiveTimemp': 'lskdfjsdlkfjl323498274'
-#                 }, 
-#                 'messageAttributes': {}, 
-#                 'md5OfBody': 'jkadhfs89732948jsdbfkj298347kjhdsk', 
-#                 'eventSource': 'aws:sqs', 
-#                 'eventSourceARN': 'arn:aws:sqs:us-east-1:319760898065:d_smart_queue.fifo', 
-#                 'awsRegion': 'us-east-1'
-#             }
-#         ]
-#     }
+#                 'ApproximateReceiveCount': '1', 
+#                 'AWSTraceHeader': 'ewr4dssdfdc9:0', 
+#                 'SentTimestamp': '172945564', 
+#                 'SequenceNumber': 'dsffds', 
+#                 'MessageGroupId': 'RwixwKQ', 
+#                 'SenderId': 'fds2:function_1', 
+#                 'MessageDeduplicationId': 'sdffdsfsads', 
+#                 'ApproximateFirstReceiveTimestamp': 'wtre3452'
+#             }, 
+#             'messageAttributes': {}, 
+#             'md5OfBody': 'upiqeohajkls', 
+#             'eventSource': 'aws:sqs', 
+#             'eventSourceARN': 'arn:aws:sqs:us-west-2:2345:queue.', 
+#             'awsRegion': 'us-east-2'
+#         }
+#     ]
+# }
 #     context = ''
 #     lambda_handler(event_api,context)
 # Local machine runs only----------------------------------------------------------------------------------------------------------------------------------------#   

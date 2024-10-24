@@ -67,7 +67,7 @@ resource "aws_api_gateway_integration" "lambda_integration" {
   passthrough_behavior    = "WHEN_NO_MATCH"
   uri                     = module.function_1.lambda_invoke_arn
   request_templates = {
-    "application/json" : "{\"statusCode\": 200}"
+    "application/json" : "" #{\"statusCode\": 200}
   }
   depends_on = [aws_api_gateway_method.proxy]
 }
