@@ -14,7 +14,7 @@ domain_email_address = 'no-reply@d-smart.io'
 test_receive_email_address = 'durellhart@live.com'
 
 # AWS CLI S3 command to upload the Resume
-# aws s3 cp ~/Documents/Professional/Durell_Hart_Resume_October_2024.pdf s3://d-smart-s3-bucket/Durell_Hart_Resume_Current.pdf
+# aws s3 cp ~/Documents/Professional/Linux-Durell-Hart-Resume-October-2024.pdf s3://d-smart-s3-bucket/Durell_Hart_Resume_Current.pdf
 
 #Variables start----------------------------------------------------------------------------------------------------------------------------------------#
 function_name = os.environ['function_name']
